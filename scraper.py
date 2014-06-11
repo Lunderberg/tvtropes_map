@@ -10,6 +10,7 @@ import requests
 # import requests_cache
 # requests_cache.install_cache('tvtropes')
 
+from indexer import Indexer
 
 
 #A queue that won't check each item more than once.
@@ -22,19 +23,6 @@ class SetQueue(Queue):
         if item not in self.all_items:
             Queue._put(self,item)
             self.all_items.add(item)
-
-class Indexer(dict):
-    def __init__(self,*args,**kwargs):
-        super().__init__(*args,**kwargs)
-        self.count = 0
-    def __getitem__(self,key):
-        try:
-            return super().__getitem__(key)
-        except KeyError:
-            val = self.count
-            self.count += 1
-            self[key] = val
-            return val
 
 prefixes = ['http://tvtropes.org/pmwiki/pmwiki.php/',
             '/pmwiki/pmwiki.php/']
@@ -143,8 +131,6 @@ class TVTropes_Counter(Thread):
     @classmethod
     def extract_main(cls,url):
         output = max(url.split('/'),key=cls.name_value)
-        if output in []:
-            print(url,output)
         return output
 
     def process_link(self,link):
