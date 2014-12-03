@@ -1,0 +1,42 @@
+# -*- python -*-
+
+import os
+
+env = Environment(ENV=os.environ)
+
+if not ARGUMENTS.get('VERBOSE'):
+    env['CXXCOMSTR'] = 'Compiling C++ object $TARGETS'
+    env['CCCOMSTR'] = 'Compiling C object $TARGETS'
+    env['ARCOMSTR'] = 'Packing static library $TARGETS'
+    env['RANLIBCOMSTR'] = 'Indexing static library $TARGETS'
+    env['SHCCCOMSTR'] = 'Compiling shared C object $TARGETS'
+    env['SHCXXCOMSTR'] = 'Compiling shared C++ object $TARGETS'
+    env['LINKCOMSTR'] = 'Linking $TARGETS'
+    env['SHLINKCOMSTR'] = 'Linking shared $TARGETS'
+
+if ARGUMENTS.get('PROFILE'):
+    env.Append(CPPFLAGS=['-pg','-g'])
+    env.Append(LINKFLAGS=['-pg'])
+
+if ARGUMENTS.get('RELEASE'):
+    env.Append(CPPDEFINES=['NDEBUG'])
+else:
+    env.Append(CPPFLAGS=['-g'])
+
+
+if ARGUMENTS.get('OPTIMIZE'):
+    optimize = ARGUMENTS.get('OPTIMIZE')
+else:
+    optimize = 3
+
+if optimize!='0':
+    env.Append(CPPFLAGS=['-O{}'.format(optimize)])
+
+
+env.Append(CPPFLAGS=['-g'])
+
+env.Append(CPPFLAGS=['-std=c++11'])
+env.Append(CPPPATH=['include'])
+
+for src in Glob('*.cc'):
+    env.Program([src,Glob('src/*.cc')])
