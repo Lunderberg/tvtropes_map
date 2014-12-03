@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.3
+#!/usr/bin/env python3
 
 class Indexer(dict):
     def __init__(self,*args,**kwargs):
